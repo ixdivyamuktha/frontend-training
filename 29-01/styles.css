@@ -9,7 +9,7 @@
   display: grid;
   height: 500px;
   background-color: #c8d2d17c;
-  shadow-box: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   grid-template-columns: 60% 40%;
 }
 
