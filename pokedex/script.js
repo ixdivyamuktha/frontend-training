@@ -8,13 +8,22 @@ let currentFiltered = [];
 
 async function getPokemonList() {
   try {
-    const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=20");
-    const data = await response.json();
+    const countRes = await fetch("https://pokeapi.co/api/v2/pokemon?limit=1");
+    const countData = await countRes.json();
+    const total = countData.count || 0;
 
-    for (let pokemon of data.results) {
-      const pokemonResponse = await fetch(pokemon.url);
-      const pokemonData = await pokemonResponse.json();
-      allPokemon.push(pokemonData);
+    const listRes = await fetch(
+      `https://pokeapi.co/api/v2/pokemon?limit=${total}&offset=0`,
+    );
+    const listData = await listRes.json();
+
+    const urls = listData.results.map((r) => r.url);
+    const batchSize = 50;
+    for (let i = 0; i < urls.length; i += batchSize) {
+      const batch = urls.slice(i, i + batchSize);
+      const promises = batch.map((u) => fetch(u).then((r) => r.json()));
+      const results = await Promise.all(promises);
+      allPokemon.push(...results);
     }
 
     populateTypeFilter();
